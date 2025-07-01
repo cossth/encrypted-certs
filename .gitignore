@@ -1,0 +1,10 @@
+*.crt
+*.key
+*.csr
+*.pem
+*.pfx
+*.p12
+*.p7b
+*.srl
+.env
+!*.enc
