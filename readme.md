@@ -6,6 +6,9 @@ This directory provides a secure workflow for storing and managing sensitive cer
 
 - Encrypts certificate files (`.crt`, `.key`, `.csr`, `.srl`, etc.) using AES-256-CBC.
 - Decrypts files on demand for local use.
+- Encrypt or decrypt a single file by specifying its path.
+- Option to encrypt all files and overwrite existing `.enc` files (`encrypt all`).
+- Cleans (removes) unencrypted files only if the corresponding `.enc` file exists.
 - Uses a password from the `CERT_PASS` environment variable.
 - Supports loading environment variables from a `.env` file.
 - Example `.sample.env` provided.
@@ -31,16 +34,40 @@ openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out c
 openssl pkcs12 -export -out client.p12 -inkey client.key -in client.crt
 ```
 
-### 3. Encrypt all certificate files
+### 3. Encrypt certificate files
 
+Encrypt only files that are not already encrypted:
 ```sh
-CERT_PASS=your-password ./cert-crypto.sh encrypt
+CERT_PASS=your-password ./crypto-vault.sh encrypt
+```
+
+Encrypt and overwrite all `.enc` files:
+```sh
+CERT_PASS=your-password ./crypto-vault.sh encrypt all
+```
+
+Encrypt a single file:
+```sh
+CERT_PASS=your-password ./crypto-vault.sh encrypt path/to/file.crt
 ```
 
 ### 4. Decrypt files when needed
 
+Decrypt all `.enc` files:
 ```sh
-CERT_PASS=your-password ./cert-crypto.sh decrypt
+CERT_PASS=your-password ./crypto-vault.sh decrypt
+```
+
+Decrypt a single file:
+```sh
+CERT_PASS=your-password ./crypto-vault.sh decrypt path/to/file.crt.enc
+```
+
+### 5. Clean unencrypted files
+
+Remove unencrypted files only if the corresponding `.enc` file exists:
+```sh
+./crypto-vault.sh clean
 ```
 
 > **Note:** Never commit unencrypted certificate files. The `.gitignore` is configured to only allow encrypted (`*.enc`) files.
@@ -55,7 +82,7 @@ CERT_PASS=your-password ./cert-crypto.sh decrypt
 
 - `.gitignore` – Ensures only encrypted files are tracked.
 - `.gitattributes` – Optional: configure custom diff/filter for encrypted files.
-- `cert-crypto.sh` – Script to encrypt/decrypt certificate files.
+- `crypto-vault.sh` – Script to encrypt/decrypt/clean certificate files.
 - `.sample.env` – Example environment file for setting `CERT_PASS`.
 
 ---
